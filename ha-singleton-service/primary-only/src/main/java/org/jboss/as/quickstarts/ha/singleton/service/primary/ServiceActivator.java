@@ -26,6 +26,7 @@ import org.jboss.msc.value.InjectedValue;
 import org.wildfly.clustering.group.Group;
 import org.wildfly.clustering.group.Node;
 import org.wildfly.clustering.singleton.SingletonDefaultRequirement;
+import org.wildfly.clustering.singleton.SingletonElectionListener;
 import org.wildfly.clustering.singleton.SingletonPolicy;
 
 /**
@@ -56,7 +57,10 @@ public class ServiceActivator implements org.jboss.msc.service.ServiceActivator 
 
             Service<Node> service = new SingletonService(group);
 
+            SingletonElectionListener listener = new MySingletonElectionListener();
+
             policy.createSingletonServiceBuilder(SINGLETON_SERVICE_NAME, service)
+                    .electionListener(listener)
                     .build(serviceActivatorContext.getServiceTarget())
                     .addDependency(ServiceName.parse("org.wildfly.clustering.default-group"), Group.class, group)
                     .install();
